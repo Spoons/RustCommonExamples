@@ -1,8 +1,8 @@
 extern crate rand;
-
 use rand::Rng;
 
 pub fn missing_element() {
+
     println!("Generating vectors...");
     let n_elements = 10;
     let mut vec_a = Vec::new();
