@@ -1,0 +1,7 @@
+[package]
+name = "rust_pp2"
+version = "1.0.0"
+authors = ["Michael A. Ciociola"]
+
+[dependencies]
+rand = "0.4" # Or a newer version
