@@ -8,16 +8,32 @@ pub fn run() {
     println!("Problem 4: File IO\nCounting words in file.txt\n");
 
     let input = read_to_string("input.txt");
+    println!("String: {}", input);
 
-    println!("{}", input);
-    let mut word_count = 0;
-
-
-
-    println!("Found {} words", word_count);
+    let count = word_count(&input);
+    println!("found {} words", count);
 
     // `file` goes out of scope, and the "hello.txt" file gets closed
 }
+
+fn word_count(input: &str) -> i64 {
+    let mut wc = 0;
+    let mut new_line = true;
+    for (i, c) in input.chars().enumerate() {
+        if (new_line && c.is_alphanumeric()) {
+            new_line=false;
+            wc+=1;
+        }
+        if (c == '\n') {
+            new_line=true;
+        }
+        if (c == ' ') {
+            wc+=1;
+        }
+    }
+    return wc;
+}
+
 
 fn read_to_string(path: &str) -> String {
     let path = Path::new(path);
