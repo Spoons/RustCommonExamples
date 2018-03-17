@@ -5,13 +5,13 @@ use std::path::Path;
 
 
 pub fn run() {
-    println!("Problem 4: File IO\nCounting words in file.txt\n");
+    println!("\n\nProblem 4: File IO\nCounting words in file.txt");
 
     let input = read_to_string("input.txt");
     println!("String: {}", input);
 
     let count = word_count(&input);
-    println!("found {} words", count);
+    println!("found {} words\n\n", count);
 
     // `file` goes out of scope, and the "hello.txt" file gets closed
 }
