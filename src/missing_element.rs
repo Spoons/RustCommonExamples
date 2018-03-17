@@ -10,7 +10,7 @@ pub fn missing_element() {
 
     //we begin by inserting 10 random numbers (between 0 and 100)
     //into our vec_ator
-    generate_random_vec_ator(&mut vec_a, n_elements);
+    generate_random_vector(&mut vec_a, n_elements);
 
     //clone a into b
     vec_b = vec_a.clone();
@@ -29,7 +29,7 @@ pub fn missing_element() {
     println!("Missing element is: {}", missing_element);
 }
 
-fn generate_random_vec_ator(v: &mut Vec<i32>, n: i32) {
+fn generate_random_vector(v: &mut Vec<i32>, n: i32) {
     let mut rng = rand::thread_rng();
     for i in 0..n {
         v.push(rng.gen_range(0, 100));
