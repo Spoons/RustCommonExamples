@@ -3,7 +3,7 @@ use rand::Rng;
 use std::io;
 
 
-static NUM_CRIMINALS: i32 = 7;
+static NUM_CRIMINALS: i32 = 3;
 static NUM_PERPS: i32 = 3;
 static NUM_PLAYERS: i32 = 1;
 
@@ -31,6 +31,14 @@ pub fn run() {
     }
 
     loop {
+        println!("The criminals are: ");
+        for i in 0..NUM_CRIMINALS {
+            print!("{} ", i);
+        }
+        println!();
+
+
+
         let selected_criminals = choose_n_in_range(3, 0, NUM_CRIMINALS);
         println!("Three criminals have been selected: {} {} {}", selected_criminals[0], selected_criminals[1],selected_criminals[2]);
 
@@ -41,23 +49,38 @@ pub fn run() {
             }
         }
 
-        println!("{} of these criminals are the perps.\nWould you like to guess the perps? [yes/no]", c);
-        let choice: bool = player_input_yes_or_no();
+        for i in 0..NUM_PLAYERS {
+            println!("{} of these criminals are the perps.\nWould you like to guess the perps? [yes/no]", c);
+            let choice: bool = player_input_yes_or_no();
 
-        if !choice {
-            continue;
+            if !choice {
+                continue;
+            }
         }
 
         println!("Valid input: \"1 2 3\"\nEnter your guess: ");
 
         let choices = get_player_choices();
+        let results = score_choices(choices, &criminal_list);
 
-
-
-        break;
+        if (results) {
+            println!("Congradulations! You guessed correctly.");
+            break;
+        } else {
+            println!("Game over!! You lose.");
+            break;
+        }
     }
 
-    println!("{:?}", criminal_list);
+    println!("{:?}", &criminal_list);
+}
+fn score_choices(choices: Vec<i32>, criminals: &Vec<Criminal>) -> bool {
+    for n in choices {
+        if criminals[n as usize].perp == false {
+            return false;
+        }
+    }
+    return true;
 }
 fn get_player_choices() -> Vec<i32> {
     let stdin = io::stdin();
@@ -86,8 +109,8 @@ fn get_player_choices() -> Vec<i32> {
 }
 fn player_input_yes_or_no () -> bool {
     let stdin = io::stdin();
-    let mut buffer = String::new();
     loop {
+        let mut buffer = String::new();
         let _read_result = stdin.read_line(&mut buffer);
         buffer = buffer.trim().to_string();
         match buffer.as_str() {
