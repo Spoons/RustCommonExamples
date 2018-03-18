@@ -1,7 +1,12 @@
 extern crate rand;
 use rand::Rng;
 use std::io;
-use std::io::prelude::*;
+
+
+static NUM_CRIMINALS: i32 = 7;
+static NUM_PERPS: i32 = 3;
+static NUM_PLAYERS: i32 = 1;
+
 
 #[derive(Debug)]
 pub struct Criminal {
@@ -9,18 +14,15 @@ pub struct Criminal {
     perp: bool,
 }
 pub fn run() {
-    let num_criminals = 7;
-    let num_perps = 3;
-    let num_players = 1;
 
     //list of criminals
     let mut criminal_list:Vec<Criminal> = Vec::new();
 
     //choose three criminals to be perps
-    let perp_choices = choose_n_in_range(num_perps, 0, num_criminals);
+    let perp_choices = choose_n_in_range(NUM_PERPS, 0, NUM_CRIMINALS);
 
     //generate the criminal list and assign perp status
-    for i in 0..num_criminals {
+    for i in 0..NUM_CRIMINALS {
         let mut perp = false;
         if perp_choices.contains(&i) {
             perp = true;
@@ -29,7 +31,7 @@ pub fn run() {
     }
 
     loop {
-        let selected_criminals = choose_n_in_range(3, 0, num_criminals);
+        let selected_criminals = choose_n_in_range(3, 0, NUM_CRIMINALS);
         println!("Three criminals have been selected: {} {} {}", selected_criminals[0], selected_criminals[1],selected_criminals[2]);
 
         let mut c = 0;
@@ -39,12 +41,61 @@ pub fn run() {
             }
         }
 
-        println!("{} of these criminals are the perps.\nWould you like to guess the perps? [y/n]", c);
+        println!("{} of these criminals are the perps.\nWould you like to guess the perps? [yes/no]", c);
+        let choice: bool = player_input_yes_or_no();
+
+        if !choice {
+            continue;
+        }
+
+        println!("Valid input: \"1 2 3\"\nEnter your guess: ");
+
+        let choices = get_player_choices();
+
+
 
         break;
     }
 
     println!("{:?}", criminal_list);
+}
+fn get_player_choices() -> Vec<i32> {
+    let stdin = io::stdin();
+    let mut choices: Vec<i32>;
+    loop {
+        let mut buffer = String::new();
+        let _read_result = stdin.read_line(&mut buffer);
+        buffer = buffer.trim().to_string();
+
+        choices = buffer.split(" ").filter_map(|s| s.parse::<i32>().ok()).collect::<Vec<i32>>();
+
+        if choices.len() != 3 {
+            println!("Incorrect number of choices.\nTry Again: ");
+            continue
+        }
+
+        for n in &choices {
+            if n < &0 || n > &NUM_CRIMINALS {
+                println!("Invalid selection. Selection out of range.\nTry again: ");
+            }
+        }
+        break;
+    }
+
+    return choices;
+}
+fn player_input_yes_or_no () -> bool {
+    let stdin = io::stdin();
+    let mut buffer = String::new();
+    loop {
+        let _read_result = stdin.read_line(&mut buffer);
+        buffer = buffer.trim().to_string();
+        match buffer.as_str() {
+            "yes" => return true,
+            "no" => return false,
+            _ => println!("invalid input.\nanswer yes or no."),
+        }
+    }
 }
 fn choose_n_in_range(n: i32, l: i32, r: i32) -> Vec<i32> {
     let mut rng = rand::thread_rng();
