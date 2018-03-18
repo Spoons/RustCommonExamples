@@ -3,9 +3,9 @@ use rand::Rng;
 use std::io;
 
 
-static NUM_CRIMINALS: i32 = 3;
+static NUM_CRIMINALS: i32 = 7;
 static NUM_PERPS: i32 = 3;
-static NUM_PLAYERS: i32 = 1;
+static NUM_PLAYERS: i32 = 3;
 
 
 #[derive(Debug)]
@@ -13,6 +13,7 @@ pub struct Criminal {
     name: i32,
     perp: bool,
 }
+
 pub fn run() {
 
     //list of criminals
@@ -30,7 +31,14 @@ pub fn run() {
         criminal_list.push(Criminal { name: i, perp: perp  });
     }
 
+    let mut game_win = false;
+    let mut players_lost: Vec<i32> = Vec::new();
+
     loop {
+        if game_win == true {
+            break;
+        }
+
         println!("The criminals are: ");
         for i in 0..NUM_CRIMINALS {
             print!("{} ", i);
@@ -39,43 +47,67 @@ pub fn run() {
 
 
 
-        let selected_criminals = choose_n_in_range(3, 0, NUM_CRIMINALS);
-        println!("Three criminals have been selected: {} {} {}", selected_criminals[0], selected_criminals[1],selected_criminals[2]);
+        let mut selected_criminals = choose_n_in_range(3, 0, NUM_CRIMINALS);
+        selected_criminals.sort();
 
-        let mut c = 0;
-        for n in selected_criminals {
-            if criminal_list[n as usize].perp == true {
-                c+=1;
+
+        //counts how many of the proposed criminals are actually perps
+        let mut count = 0;
+        for n in &selected_criminals {
+            if criminal_list[*n as usize].perp == true {
+                count+=1;
             }
         }
 
-        for i in 0..NUM_PLAYERS {
-            println!("{} of these criminals are the perps.\nWould you like to guess the perps? [yes/no]", c);
+
+        for player in 0..NUM_PLAYERS {
+
+            if players_lost.contains(&player) {
+                continue;
+            }
+
+            println!("Three criminals have been selected: {} {} {}", &selected_criminals[0], selected_criminals[1],selected_criminals[2]);
+
+            println!("{} of these criminals are the perps.\nPlayer {} you like to guess the perps? [yes/no]", count, player );
             let choice: bool = player_input_yes_or_no();
 
             if !choice {
                 continue;
             }
-        }
 
-        println!("Valid input: \"1 2 3\"\nEnter your guess: ");
+            println!("Valid input: \"1 2 3\"\nPlayer {}, enter your guess: ", player);
 
-        let choices = get_player_choices();
-        let results = score_choices(choices, &criminal_list);
+            let choices = get_player_choices();
+            let results = score_choices(choices, &criminal_list);
 
-        if (results) {
-            println!("Congradulations! You guessed correctly.");
-            break;
-        } else {
-            println!("Game over!! You lose.");
-            break;
+            if (results) {
+                println!("Congradulations, player {}! You guessed correctly.\n\nYou win!!!", player);
+                game_win = true;
+                break;
+            } else {
+                println!("Incorrect guess. Player {}, you lose.", player);
+                players_lost.push(player);
+
+                if players_lost.len() == NUM_PLAYERS as usize{
+                    break;
+                }
+            }
         }
     }
 
+    println!("Game over!");
     println!("{:?}", &criminal_list);
 }
 fn score_choices(choices: Vec<i32>, criminals: &Vec<Criminal>) -> bool {
-    for n in choices {
+    //sort and remove dupes from choices
+    let mut sorted_choices: Vec<i32> = choices.clone();
+    sorted_choices.sort();
+    sorted_choices.dedup();
+
+    if sorted_choices.len() < NUM_PERPS as usize {
+        return false;
+    }
+    for n in sorted_choices {
         if criminals[n as usize].perp == false {
             return false;
         }
