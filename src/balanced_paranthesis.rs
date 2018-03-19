@@ -14,10 +14,10 @@ pub fn match_parantheses(input: &str) -> bool {
     let open_chars: Vec<char> = vec!['(', '{', '['];
     let close_chars: Vec<char> = vec![')', '}', ']'];
 
-    let mut open_to_close_map = HashMap::new();
-    open_to_close_map.insert(')', '(');
-    open_to_close_map.insert('}', '{');
-    open_to_close_map.insert(']', '[');
+    let mut close_to_open_map = HashMap::new();
+    close_to_open_map.insert(')', '(');
+    close_to_open_map.insert('}', '{');
+    close_to_open_map.insert(']', '[');
 
 
 
@@ -26,10 +26,10 @@ pub fn match_parantheses(input: &str) -> bool {
             character_stack.push(c);
         }
         if close_chars.contains(&c) {
-            let c_c = character_stack.pop();
-            let c_o = open_to_close_map.get(&c);
+            let last_open_char = character_stack.pop();
+            let matching_char = close_to_open_map.get(&c);
 
-            if (c_o.unwrap() != &c_c.unwrap()) {
+            if (matching_char.unwrap() != &last_open_char.unwrap()) {
                 return false;
             }
         }
